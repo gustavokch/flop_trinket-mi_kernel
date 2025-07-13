@@ -20,11 +20,8 @@ jobs:
     steps:
       # Step 1: Set up the ARM64 execution environment.
       # This action uses QEMU to emulate an ARM64 runner.
-      - name: Set up ARM64 runner
-        uses: uraimo/run-on-arch-action@v3
-        with:
-          arch: arm64
-          distro: ubuntu22.04
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
 
       # Step 2: Checkout your kernel source code.
       - name: Checkout Kernel Source
