@@ -37,8 +37,8 @@ jobs:
           sudo apt-get install -y \
             git ccache automake lz4 flex gperf imagemagick \
             libncurses5-dev libssl-dev libelf-dev bc bison \
-            build-essential clang lld zip
-
+            build-essential clang lld zip libtinfo5
+          sudo apt dist-upgrade -y
       # Step 4: Set up environment and run the build script.
       - name: Build the Kernel
         run: |
