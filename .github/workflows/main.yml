@@ -75,4 +75,5 @@ jobs:
           name: KernelSU-Ginkgo-${{ github.sha }}
           # Use a wildcard to find the flashable zip produced by your build script.
           # This assumes the output zip file contains the device name 'ginkgo'.
-          path: ./*ginkgo*.zip
+  #        path: ./*ginkgo*.zip
+          path: /home/runner/work/flop_trinket-mi_kernel/*ginkgo*.zip
