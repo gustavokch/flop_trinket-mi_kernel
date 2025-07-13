@@ -134,14 +134,14 @@ FK_VER="v1.1"
 USE_CCACHE=1
 
 ## Parse arguments
-DO_KSU=0
-DO_CLEAN=0
+DO_KSU=1
+DO_CLEAN=1
 DO_MENUCONFIG=0
-IS_RELEASE=0
+IS_RELEASE=1
 DO_TG=0
-DO_REGEN=0
+DO_REGEN=1
 DO_BASHUP=0
-DO_FLTO=0
+DO_FLTO=1
 for arg in "$@"; do
     if [[ "$arg" == *m* ]]; then
         echo "INFO: menuconfig enabled"
