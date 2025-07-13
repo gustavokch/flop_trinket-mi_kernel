@@ -37,8 +37,10 @@ jobs:
           sudo apt-get install -y \
             git ccache automake lz4 flex gperf imagemagick \
             libncurses5-dev libssl-dev libelf-dev bc bison \
-            build-essential clang lld zip libtinfo5
+            build-essential clang lld zip wget
           sudo apt dist-upgrade -y
+          wget http://security.ubuntu.com/ubuntu/pool/universe/n/ncurses/libtinfo5_6.3-2_amd64.deb
+          sudo dpkg -i libtinfo5_6.3-2_amd64.deb
       # Step 4: Set up environment and run the build script.
       - name: Build the Kernel
         run: |
