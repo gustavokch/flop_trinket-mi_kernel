@@ -1,0 +1,79 @@
+# A friendly name for the workflow, shown in the GitHub Actions tab.
+name: Build Ginkgo Kernel (KernelSU)
+
+# Controls when the action will run.
+on:
+  # Allows you to run this workflow manually from the Actions tab.
+  workflow_dispatch:
+  # Triggers the workflow on push events to the main branch.
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    # A friendly name for the job.
+    name: Build Kernel on ARM64
+    # This job runs on an emulated ARM64 environment.
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Set up the ARM64 execution environment.
+      # This action uses QEMU to emulate an ARM64 runner.
+      - name: Set up ARM64 runner
+        uses: uraimo/run-on-arch-action@v2.7.2
+        with:
+          arch: arm64
+          distro: ubuntu22.04
+
+      # Step 2: Checkout your kernel source code.
+      - name: Checkout Kernel Source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # Step 3: Install build dependencies.
+      # The underlying build process will still require these tools.
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git ccache automake lz4 flex gperf imagemagick \
+            libncurses5-dev libssl-dev libelf-dev bc bison \
+            build-essential clang lld zip
+
+      # Step 4: Set up environment and run the build script.
+      - name: Build the Kernel
+        run: |
+          # --- Environment Setup ---
+          # Set the architecture for the build.
+          export ARCH=arm64
+          export SUBARCH=arm64
+
+          # Set the compiler to Clang/LLD, as the underlying makefile will use it.
+          export CC=clang
+          export LD=ld.lld
+          export AR=llvm-ar
+          export NM=llvm-nm
+          export OBJCOPY=llvm-objcopy
+          export OBJDUMP=llvm-objdump
+          export STRIP=llvm-strip
+
+          # Use ccache to speed up subsequent builds.
+          export USE_CCACHE=1
+          export CCACHE_EXEC=/usr/bin/ccache
+          export CCACHE_DIR=~/.ccache
+          
+          # --- Execute the Build Script ---
+          # Run the main script to build the ginkgo target with the 'k' (KernelSU) option.
+          bash do_build.sh ginkgo k
+
+      # Step 5: Upload the final flashable zip as a build artifact.
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # The name of the artifact to be uploaded.
+          name: KernelSU-Ginkgo-${{ github.sha }}
+          # Use a wildcard to find the flashable zip produced by your build script.
+          # This assumes the output zip file contains the device name 'ginkgo'.
+          path: ./*ginkgo*.zip
