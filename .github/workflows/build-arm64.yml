@@ -1,0 +1,63 @@
+# A friendly name for the workflow, shown in the GitHub Actions tab.
+name: Build Ginkgo Kernel (ARM64 Hosted)
+
+# Controls when the action will run.
+on:
+  # Allows you to run this workflow manually from the Actions tab.
+  workflow_dispatch:
+  # Triggers the workflow on push events to the main branch.
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    # A friendly name for the job.
+    name: Build Kernel on GitHub ARM64 Runner
+    # This now targets a GitHub-hosted ARM64 runner.
+    runs-on: ubuntu-latest-arm64
+
+    steps:
+      # Step 1: Checkout your kernel source code.
+      - name: Checkout Kernel Source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      # Step 2: Install build dependencies.
+      - name: Install Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git ccache automake lz4 flex gperf imagemagick \
+            libncurses5-dev libssl-dev libelf-dev bc bison \
+            build-essential clang lld zip
+
+      # Step 3: Set up environment and run the build script.
+      - name: Build the Kernel
+        run: |
+          # --- Environment Setup ---
+          export ARCH=arm64
+          export SUBARCH=arm64
+          export CC=clang
+          export LD=ld.lld
+          export AR=llvm-ar
+          export NM=llvm-nm
+          export OBJCOPY=llvm-objcopy
+          export OBJDUMP=llvm-objdump
+          export STRIP=llvm-strip
+          export USE_CCACHE=1
+          export CCACHE_EXEC=/usr/bin/ccache
+          export CCACHE_DIR=~/.ccache
+
+          # --- Execute the Build Script ---
+          bash do_build.sh ginkgo k
+
+      # Step 4: Upload the final flashable zip as a build artifact.
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # The name of the artifact to be uploaded.
+          name: KernelSU-Ginkgo-${{ github.sha }}
+          # Use a wildcard to find the flashable zip produced by your build script.
+          path: ./*ginkgo*.zip
