@@ -62,7 +62,8 @@ jobs:
           export USE_CCACHE=1
           export CCACHE_EXEC=/usr/bin/ccache
           export CCACHE_DIR=~/.ccache
-          
+
+          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -s next
           # --- Execute the Build Script ---
           # Run the main script to build the ginkgo target with the 'k' (KernelSU) option.
           bash do_build.sh ginkgo k
