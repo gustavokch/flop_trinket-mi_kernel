@@ -56,9 +56,7 @@ jobs:
           export NM=llvm-nm
           export OBJCOPY=llvm-objcopy
           export OBJDUMP=llvm-objdump
-          export STRIP=llvm-strip
-          # update ksu-next
-          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -       
+          export STRIP=llvm-strip     
           # Use ccache to speed up subsequent builds.
           export USE_CCACHE=1
           export CCACHE_EXEC=/usr/bin/ccache
