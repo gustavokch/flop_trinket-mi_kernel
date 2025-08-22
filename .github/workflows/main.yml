@@ -57,7 +57,8 @@ jobs:
           export OBJCOPY=llvm-objcopy
           export OBJDUMP=llvm-objdump
           export STRIP=llvm-strip
-
+          # update ksu-next
+          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -       
           # Use ccache to speed up subsequent builds.
           export USE_CCACHE=1
           export CCACHE_EXEC=/usr/bin/ccache
@@ -66,7 +67,6 @@ jobs:
 
           # --- Execute the Build Script ---
           # Run the main script to build the ginkgo target with the 'k' (KernelSU) option.
-          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -
           bash do_build.sh ginkgo k
 
       # Step 5: Upload the final flashable zip as a build artifact.
