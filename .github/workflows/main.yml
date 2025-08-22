@@ -66,6 +66,7 @@ jobs:
 
           # --- Execute the Build Script ---
           # Run the main script to build the ginkgo target with the 'k' (KernelSU) option.
+          curl -LSs "https://raw.githubusercontent.com/KernelSU-Next/KernelSU-Next/next/kernel/setup.sh" | bash -
           bash do_build.sh ginkgo k
 
       # Step 5: Upload the final flashable zip as a build artifact.
