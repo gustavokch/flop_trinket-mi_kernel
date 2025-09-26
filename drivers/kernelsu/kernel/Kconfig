@@ -13,7 +13,7 @@ config KSU_KPROBES_HOOK
 	bool "Use kprobes for kernelsu"
 	depends on KSU
 	depends on KPROBES
-	default y
+	default n
 	help
 	  Disable if you use manual hooks.
 
@@ -23,6 +23,15 @@ config KSU_DEBUG
 	default n
 	help
 	  Enable KernelSU debug mode.
+
+config KSU_THRONE_TRACKER_ALWAYS_THREADED
+	bool "Always run throne_tracker in a kthread"
+	default n
+	help
+	  Runs throne_tracker in a separate kthread, including the first run.
+	  Significantly decreases boot time, but can cause crowning failure
+	  on some FDE or FBEv1 setups.
+	  If unsure, say n.
 
 config KSU_ALLOWLIST_WORKAROUND
         bool "KernelSU Session Keyring Init workaround"
@@ -44,13 +53,14 @@ menu "KernelSU - SUSFS"
 config KSU_SUSFS
     bool "KernelSU addon - SUSFS"
     depends on KSU
+    depends on THREAD_INFO_IN_TASK
     default y
     help
       Patch and Enable SUSFS to kernel with KernelSU.
 
 config KSU_SUSFS_HAS_MAGIC_MOUNT
     bool "Say yes if the current KernelSU repo has magic mount implemented (default y)"
-    depends on KSU
+    depends on KSU_SUSFS
     default y
     help
       - Enable to indicate that the current SUSFS kernel supports the auto hide features for 5ec1cff's Magic Mount KernelSU
@@ -104,19 +114,19 @@ config KSU_SUSFS_SUS_KSTAT
       - Effective only on zygote spawned user app process.
 
 config KSU_SUSFS_TRY_UMOUNT
-    bool "Enable to use ksu's ksu_try_umount"
+    bool "Enable to use ksu's try_umount"
     depends on KSU_SUSFS
     default y
     help
-      - Allow using ksu_try_umount to umount other user-defined mount paths prior to ksu's default umount paths.
+      - Allow using try_umount to umount other user-defined mount paths prior to ksu's default umount paths.
       - Effective on all NO-root-access-granted processes.
 
 config KSU_SUSFS_AUTO_ADD_TRY_UMOUNT_FOR_BIND_MOUNT
-    bool "Enable to add bind mounts to ksu's ksu_try_umount automatically (experimental)"
+    bool "Enable to add bind mounts to ksu's try_umount automatically (experimental)"
     depends on KSU_SUSFS_TRY_UMOUNT
     default y
     help
-      - Automatically add binded mounts to ksu's ksu_try_umount.
+      - Automatically add binded mounts to ksu's try_umount.
       - No susfs command is needed in userspace.
       - Only mount operation from process with ksu domain will be checked.
 
@@ -162,7 +172,7 @@ config KSU_SUSFS_OPEN_REDIRECT
 
 config KSU_SUSFS_SUS_SU
     bool "Enable SUS-SU in runtime temporarily"
-    depends on KSU_SUSFS && KPROBES && HAVE_KPROBES && KPROBE_EVENTS
+    depends on KSU_SUSFS && KPROBES && HAVE_KPROBES && KPROBE_EVENTS && KSU_KPROBES_HOOK
     default y
     help
       - Allow user to enable or disable core ksu kprobes hooks temporarily in runtime. There are 2 working modes for sus_su.

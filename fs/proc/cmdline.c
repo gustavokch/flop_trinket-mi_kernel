@@ -7,10 +7,6 @@
 #include <asm/setup.h>
 #endif
 
-#ifdef CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG
-extern int susfs_spoof_cmdline_or_bootconfig(struct seq_file *m);
-#endif
-
 static char proc_command_line[COMMAND_LINE_SIZE];
 
 #ifdef CONFIG_INITRAMFS_IGNORE_SKIP_FLAG
@@ -27,6 +23,10 @@ static void proc_command_line_init(void) {
 
 	memcpy(offset_addr, INITRAMFS_STR_REPLACE, INITRAMFS_STR_LEN);
 }
+#endif
+
+#ifdef CONFIG_KSU_SUSFS_SPOOF_CMDLINE_OR_BOOTCONFIG
+extern int susfs_spoof_cmdline_or_bootconfig(struct seq_file *m);
 #endif
 
 static int cmdline_proc_show(struct seq_file *m, void *v)
